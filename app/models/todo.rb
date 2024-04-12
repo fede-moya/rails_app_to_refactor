@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Todo < ApplicationRecord
+  # TODO: Why is this an attr_accessor?, is this a SQL column ? It invites me todo Todo.first.completed = true, and it's not clear what would that do.
   attr_accessor :completed
 
   belongs_to :todo_list, required: true, inverse_of: :todos
@@ -9,6 +10,7 @@ class Todo < ApplicationRecord
 
   scope :overdue, -> { incomplete.where('due_at <= ?', Time.current) }
   scope :completed, -> { where.not(completed_at: nil) }
+  # TODO: Can we define this scope first, please ? It's more readable.
   scope :incomplete, -> { where(completed_at: nil) }
 
   scope :filter_by_status, ->(params) {
@@ -42,6 +44,7 @@ class Todo < ApplicationRecord
   validates :completed_at, presence: true, allow_nil: true
 
   def overdue?
+    # TODO: Can we use multiple early returns instead ? I think that would be more readable 
     return false if !due_at || completed_at
 
     due_at <= Time.current
@@ -55,6 +58,7 @@ class Todo < ApplicationRecord
     !incomplete?
   end
 
+  # TODO: Can we extract the statues into a constant, please ? Or an enum 
   def status
     return 'completed' if completed?
     return 'overdue' if overdue?
@@ -66,6 +70,8 @@ class Todo < ApplicationRecord
     self.completed_at = Time.current unless completed?
   end
 
+  # TODO: Ususually the band indicates that the method could trough an exception, I blieve we should invoke self.save! instead. 
+  # TODO: There seems be an unnecessary check, to confirm the record is dirty. Active record will handle that.
   def complete!
     complete
 

@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_many :todo_lists, dependent: :destroy, inverse_of: :user
   has_many :todos, through: :todo_lists
 
+  # TODO: Make default_todo_list a public instance method, instead of definiting this method as a  form of an active record association.
   has_one :default_todo_list, ->(user) { user.todo_lists.default }, class_name: 'TodoList'
 
   validates :name, presence: true
@@ -17,6 +18,8 @@ class User < ApplicationRecord
   private
 
     def create_default_todo_list
+      # TODO: Add a public class method on TodoList to create a default todo list, so we can todo TodoList.create_default(user)
+      # It could also be an actual CreateDefaultTodoList
       todo_lists.create!(title: 'Default', default: true)
     end
 
